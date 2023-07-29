@@ -1,0 +1,46 @@
+version: '3.9'    
+networks:
+  student-sphere:
+volumes:
+  database-volume:
+  logs:
+services:
+  database:
+    image: mysql:latest
+    healthcheck:
+      test: ["CMD", "ls"]
+    environment:
+      MYSQL_ROOT_PASSWORD: anshul98
+      MYSQL_DATABASE: student_sphere
+      MYSQL_USER: anshul
+      MYSQL_PASSWORD: anshul@123
+    volumes:
+      - database-volume:/var/lib/mysql
+    networks:
+      - student-sphere
+
+  backend:
+    image: anshulsankhyan98/spe_major_project_backend:latest
+    environment:
+      DATABASE_HOST: database
+      DB_USERNAME: root
+      DB_PASSWORD: root@123
+    volumes:
+      - logs:/logs
+    networks:
+      - student-sphere
+    ports:
+      - "8082:8081"
+    depends_on:
+      database:
+        condition: service_healthy
+  frontend:
+    image: anshulsankhyan98/spe_major_project_frontend:latest
+    networks:
+      - student-sphere
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+
+

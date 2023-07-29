@@ -1,0 +1,31 @@
+---
+- name: Docker Pull and Run
+  hosts: all
+  remote_user: root
+  become: true
+  tasks:
+      
+    - name: copy docker-compose file
+      copy:
+        src: ./docker-compose.yml
+        dest: ./
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+    - name: remove containers using docker-compose
+      command: docker-compose down 
+      
+    - name: Remove react existing image for fresh pull
+      docker_image:
+        name: anshulsankhyan98/spe_major_project_frontend:latest
+        state: absent
+
+    - name: Remove spring existing image for fresh pull
+      docker_image:
+        name: anshulsankhyan98/spe_major_project_backend:latest
+        state: absent  
+
+    - name: Create containers using docker-compose
+      command: docker-compose up -d
+      
+        
